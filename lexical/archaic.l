@@ -24,19 +24,19 @@ bool hasError = false;
 
 [ \t]                   { col++;}
 [\n]                    { line++; col=0;}
-"out"					{ OFFSET; APPEND("out"); }
-"in"					{ OFFSET; APPEND("in"); }
-"if"					{ OFFSET; APPEND("if");}
-"elif"					{ OFFSET; APPEND("elif"); }
-"else"					{ OFFSET; APPEND("else"); }
-"return"				{ OFFSET; APPEND("return"); }
-"new"					{ OFFSET; APPEND("new"); }
+"proclaim"					{ OFFSET; APPEND("proclaim"); }
+"inquire"					{ OFFSET; APPEND("inquire"); }
+"perhaps"					{ OFFSET; APPEND("perhaps");}
+"however"					{ OFFSET; APPEND("however"); }
+"otherwise"					{ OFFSET; APPEND("otherwise"); }
+"yield"				{ OFFSET; APPEND("yield"); }
+"anew"					{ OFFSET; APPEND("anew"); }
 "+"					    { OFFSET; APPEND("+"); }
 "-"					    { OFFSET; APPEND("-"); }
 "*"					    { OFFSET; APPEND("*"); }
 "/"					    { OFFSET; APPEND("/"); }
 "method"				{ OFFSET; APPEND("method"); }
-"high"					{ OFFSET; APPEND("high"); }
+"indeed"					{ OFFSET; APPEND("indeed"); }
 ">="					{ OFFSET; APPEND(">="); }
 "<="					{ OFFSET; APPEND("<="); }
 ">"					    { OFFSET; APPEND(">"); }
@@ -49,7 +49,7 @@ bool hasError = false;
 "}"					    { OFFSET; APPEND("}"); }
 "="					    { OFFSET; APPEND("="); }
 ";"					    { OFFSET; APPEND(";"); }
-"low"					{ OFFSET; APPEND("low"); }
+"nay"					{ OFFSET; APPEND("nay"); }
 "&&"					{ OFFSET; APPEND("&&"); }
 "||"					{ OFFSET; APPEND("||"); }
 "num"					{ OFFSET; APPEND("num"); }
@@ -58,7 +58,7 @@ bool hasError = false;
 "bool"					{ OFFSET; APPEND("bool"); }
 
 \#.*			        { ; }
-[_a-zA-z][_a-zA-Z0-9']* { OFFSET; APPEND("ID"); }
+[_a-zA-z][_a-zA-Z0-9]* { OFFSET; APPEND("ID"); }
 [0-9]+\.[0-9]*	        { OFFSET; APPEND("DEC"); }
 [0-9]+   	            { OFFSET; APPEND("INT"); }
 ["].*["]                { OFFSET; APPEND("STR"); }
@@ -79,9 +79,9 @@ int main(){
 		return 1;
 	}
     
-    std::cout<< BOLDWHITE << "Lexeme"<< BOLDMAGENTA << "\t" << WHITE <<"Token"  << "\t" << BOLDMAGENTA << "Line" "\t" << BOLDMAGENTA << "Col\n" << RESET;
+    std::cout<< BOLDWHITE << "Lexeme"<< BOLDBLUE << "\t" << WHITE <<"Token"  << "\t" << BOLDBLUE << "Line" "\t" << BOLDBLUE << "Col\n" << RESET;
 
 	for(auto &x: tokens){
-		std::cout<< BOLDWHITE <<x.first[0] << "\t" << BOLDMAGENTA << x.first[1] << "\t"<< CYAN << x.second[0] << "\t"<< CYAN << x.second[1] << RESET << "\n";
+		std::cout<< BOLDWHITE <<x.first[0] << "\t" << BOLDRED << x.first[1] << "\t"<< CYAN << x.second[0] << "\t"<< BOLDYELLOW << x.second[1] << RESET << "\n";
 	}
 }

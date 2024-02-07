@@ -1,18 +1,18 @@
 method sample_func(){
-    new num a = 3;
-    new dec b = 3.5;
-    new bool c = high;
-    new num d = a * 4;
+    anew num a = 3;
+    anew dec b = 3.5;
+    anew bool c = indeed;
+    anew num d = a * 4;
 
-    if( a > d || c ){
-        out("ABC");
-    }elif(d >= a && b < 0 ){
-        out("DEF");
-    }else{
-        out("GHI");
+    perhaps( a > d || c ){
+        proclaim("ABC");
+    }however(d >= a && b < 0 ){
+        proclaim("DEF");
+    }otherwise{
+        proclaim("GHI");
     }
 
-    new str e = in();
+    anew str e = in();
 
-    return 3;
+    yield 3;
 }
