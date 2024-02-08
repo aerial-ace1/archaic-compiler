@@ -1,15 +1,17 @@
+# This is a comment
+
 method sample_func(){
     anew num a = 3;
-    anew dec b = 3.5;
+    anew dec b = 34.578;
     anew bool c = indeed;
     anew num d = a * 4;
-
+    anew str e = "sid";
     perhaps( a > d || c ){
         proclaim("ABC");
     }however(d >= a && b < 0 ){
-        proclaim("DEF");
+        proclaim(e);
     }otherwise{
-        proclaim("GHI");
+        proclaim('e');
     }
 
     anew str e = in();
