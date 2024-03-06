@@ -5,7 +5,7 @@ num sample () {
     anew bool c = indeed;
     anew char f ='h';
     anew num d = a * b;
-    perhaps( a > d  ){
+    perhaps( a   ){
         proclaim("ABC");
     }however(d > a ){
         proclaim(e);

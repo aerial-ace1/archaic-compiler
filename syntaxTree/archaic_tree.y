@@ -6,6 +6,7 @@
     #include"archaic_tree.yy.c"
     
     int yyerror(const char *s);
+    int isErr = 0;
     int yylex(void);
     int yywrap();
     
@@ -140,7 +141,7 @@ int main() {
    
     int p = -1;
     p = yyparse();
-    if(p)
+    if(isErr == 0)
         printf("Parsing Successful\n");
 
     printf("\n\n");
@@ -156,6 +157,7 @@ int main() {
 int yyerror(const char *msg)
 {
     extern int yylineno;
+    isErr = 1;
     printf("Parsing Failed\nLine Number: %d %s\n",yylineno,msg);
     return 0;
 }
