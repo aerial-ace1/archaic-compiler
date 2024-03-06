@@ -5,12 +5,15 @@ num sample () {
     anew bool c = indeed;
     anew char f ='h';
     anew num d = a * b;
-    perhaps( a > d  ){
+    perhaps( a > d && c == b || x < inquire() ){
         proclaim("ABC");
-    }however(d >= a ){
-        proclaim(e);
     }otherwise{
+        d = inquire();
         proclaim(e);
+    }
+
+    whilst( a > 5){
+        a = a + 1;  
     }
 
 
