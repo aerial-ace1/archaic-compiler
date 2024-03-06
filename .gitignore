@@ -1,2 +1,8 @@
 lexical/archaic.out
 lexical/archaic.yy.cpp
+
+parser/y.tab.h
+parser/y.tab.c
+parser/y.output
+parser/archaic_parser.out
+parser/archaic_parser.yy.c

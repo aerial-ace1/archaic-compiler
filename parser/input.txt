@@ -1,0 +1,18 @@
+# This is a comment
+num sample () {
+    anew num a = 3;
+    anew dec b = 34.6364;
+    anew bool c = indeed;
+    anew char f ='h';
+    anew num d = a * b;
+    perhaps( a > d || c < b ){
+        proclaim("ABC");
+    }however(d >= a ){
+        proclaim(e);
+    }otherwise{
+        proclaim(e);
+    }
+
+
+    yield 3;
+}
