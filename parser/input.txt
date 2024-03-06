@@ -7,8 +7,11 @@ num sample () {
     anew num d = a * b;
     perhaps( a > d  ){
         proclaim("ABC");
-    }however(d >= a ){
+    }however(d > a ){
         proclaim(e);
+    }
+    however(a==d){
+        proclaim("hi");
     }otherwise{
         proclaim(e);
     }

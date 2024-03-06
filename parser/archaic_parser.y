@@ -3,7 +3,7 @@
     #include<string.h>
     #include<stdlib.h>
     #include<ctype.h>
-    #include "archaic_parser.yy.c"
+    #include "lex.yy.c"
     
     int yyerror(const char *s);
     int yylex(void);
@@ -34,12 +34,15 @@ body: block body
 ;
 
 block: WHILE '(' condition ')' '{' body '}'
-| IF '(' condition ')' '{' body '}' ELIF '(' condition ')' '{' body '}' else
+| IF '(' condition ')' '{' body '}' else_if_block else
 | statement ';' 
 | PRINTFF '(' STR ')' ';'
 | PRINTFF '(' ID ')' ';'
 | SCANFF '(' STR ',' '&' ID ')' ';'
+;
 
+else_if_block: ELIF '(' condition ')' '{' body '}' else_if_block
+|
 ;
 
 else: ELSE  '{' body '}'

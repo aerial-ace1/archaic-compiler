@@ -1,10 +1,10 @@
 #!/bin/bash
 
-lex -o archaic_parser.yy.c archaic_parser.l
+lex archaic_parser.l
 
-yacc -v -d archaic_parser.y --warning=none
-gcc y.tab.c -o archaic_parser.out
+yacc -v -d archaic_parser.y 
+gcc y.tab.c
 
 
-./archaic_parser.out<input.txt
+./a.out<input.txt
 
