@@ -10,12 +10,12 @@ digit          [0-9]
 
 %%
 
-"proclaim"		{ return PRINTFF; }
-"inquire"		{ return SCANFF; }
+"proclaim"		{ return PRINTFF; } -
+"inquire"		{ return SCANFF; } -
 
-"perhaps"      { return IF; }
-"otherwise"		{ return ELSE; }
-"yield" 		   { return RETURN; }
+"perhaps"      { return IF; } - 
+"otherwise"		{ return ELSE; } - 
+"yield" 		   { return RETURN; } -
 "however"      { return ELIF; }
 "anew"	      { return DECLARE; }
 "+"		      { return ADD; }
@@ -24,24 +24,24 @@ digit          [0-9]
 "/"		      { return DIV; }
 "log"		      { return LOG; }
 "exp"		      { return POW; }
-"whilst"       { return WHILE; }
+"whilst"       { return WHILE; } nope
 
-">="		      { return GE; }
-"<="		      { return LE; }
-">"		      { return GT; }
-"<"		      { return LT; }
-"=="		      { return EQ; }
-"=!="		      { return NE; }
+">="		      { return GE; } -
+"<="		      { return LE; } - 
+">"		      { return GT; } -
+"<"		      { return LT; } -
+"=="		      { return EQ; } - 
+"=!="		      { return NE; } -
 
-"indeed"		   { return TRUE; }
-"nay"		      { return FALSE; }
-"&&"		      { return AND; }
-"||"		      { return OR; }
+"indeed"		   { return TRUE; } -
+"nay"		      { return FALSE; } -
+"&&"		      { return AND; } -
+"||"		      { return OR; } -
 
 
 "num"		      { return INT; }
 "dec"		      { return FLOAT; }
-"str"		      { return STRING; }
+"str"		      { return STRING; } nope
 "bool"		   { return BOOL; }
 "char"         { return CHAR; }
 
@@ -50,14 +50,14 @@ digit          [0-9]
 [\n]			   { line_no++; }
 
 
-[-]?{digit}+                		{ return NUM; }
-[-]?{digit}+\.{digit}{1,6}  		{ return FLOAT_NUM; }
-{alphabet}({alphabet}|{digit})*  { return ID; }
+[-]?{digit}+                		{ return NUM; } -
+[-]?{digit}+\.{digit}{1,6}  		{ return FLOAT_NUM; }-
+{alphabet}({alphabet}|{digit})*  { return ID; }-
 
 
 
-["].*["]                    { return STR; }
-['].[']                     { return CHARACTER; }
+["].*["]                    { return STR; } -
+['].[']                     { return CHARACTER; } -
 
 ";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">" {return yytext[0];}
 

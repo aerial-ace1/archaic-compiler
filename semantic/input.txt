@@ -1,0 +1,25 @@
+# This is a comment
+num main() {
+    anew num a = inquire( char ) ;
+    anew str p = "abefj" + 3;
+    anew str b = "abefj" + 'c';
+    anew str pl = "abefj"  + 89.6;
+
+    anew str m = "rtes";
+    anew str l;
+    l = "abc" + m;
+    anew bool c = indeed;
+    anew char f ='h';
+    anew num d = 5;
+    perhaps(a>=d && indeed) {
+        anew num r = 5;
+    } 
+    otherwise {
+        proclaim("Abc");
+    }
+    whilst( pl > b){
+        proclaim("Abc");
+
+    }
+    yield a;
+}

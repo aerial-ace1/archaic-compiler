@@ -14,3 +14,12 @@ syntaxTree/y.output
 
 syntaxTree/archaic_tree.yy.c
 syntaxTree/archaic_tree.out
+
+semantic/archaic_semantic.yy.c
+semantic/archaic_semantic.out
+semantic/a.out
+semantic/lex.yy.c
+
+semantic/y.tab.h
+semantic/y.tab.c
+semantic/y.output
