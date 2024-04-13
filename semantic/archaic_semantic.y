@@ -91,7 +91,11 @@ body: IF { add('K'); } '(' condition ')' '{' body '}' else {
 
 ;
 
-else: ELSE { add('K'); } '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name); }
+else: ELIF { add('K'); } '(' condition ')' '{' body '}' else { 
+	struct node *elif = mknode($4.nd, $7.nd, $1.name); 
+	$$.nd = mknode(elif,$9.nd , "elif"); 
+} 
+| ELSE { add('K'); } '{' body '}' { $$.nd = mknode(NULL, $4.nd, $1.name); }
 | { $$.nd = NULL; }
 ;
 
@@ -396,6 +400,9 @@ void check_return_type(char *value) {
 int check_types(char *type1, char *type2){
 
 	if(!strcmp(type2, "null"))
+
+
+	
 		return -1;
 
 	if(!strcmp(type1, type2))
@@ -442,14 +449,7 @@ void add(char c) {
 	}
     q=search(yytext);
 	if(!q) {
-		if(c == 'H') {
-			symbol_table[count].id_name=strdup(yytext);
-			symbol_table[count].data_type=strdup(type);
-			symbol_table[count].line_no=countn;
-			symbol_table[count].type=strdup("Header");
-			count++;
-		}
-		else if(c == 'K') {
+		if(c == 'K') {
 			symbol_table[count].id_name=strdup(yytext);
 			symbol_table[count].data_type=strdup("N/A");
 			symbol_table[count].line_no=countn;

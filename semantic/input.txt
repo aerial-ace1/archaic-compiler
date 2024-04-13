@@ -1,6 +1,6 @@
 # This is a comment
 num main() {
-    anew num a = inquire( char ) ;
+    anew num a = inquire( char ) ;    
     anew str p = "abefj" + 3;
     anew str b = "abefj" + 'c';
     anew str pl = "abefj"  + 89.6;
@@ -8,12 +8,17 @@ num main() {
     anew str m = "rtes";
     anew str l;
     l = "abc" + m;
+
+
     anew bool c = indeed;
     anew char f ='h';
-    anew num d = 5;
+    anew num d = 5  ;
+    
     perhaps(a>=d && indeed) {
         anew num r = 5;
-    } 
+    } however( indeed ){
+        proclaim("Abc");
+    }
     otherwise {
         proclaim("Abc");
     }
