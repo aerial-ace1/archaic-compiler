@@ -23,3 +23,10 @@ semantic/lex.yy.c
 semantic/y.tab.h
 semantic/y.tab.c
 semantic/y.output
+
+icg/a.out
+icg/lex.yy.c
+
+icg/y.tab.h
+icg/y.tab.c
+icg/y.output
