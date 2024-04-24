@@ -1,10 +1,10 @@
 # This is a comment
-str ace(){
+str ace(num apr, dec prd){
     anew str ap = "plz";
     yield ap;
 }
 
-num spade( num apr, dec prd ) {
+num spade( ) {
     anew num a = inquire( char ) ;    
     anew str p = "abefj" + 3 + 5;
     anew str b = "abefj" + 'c' + 6;
@@ -20,19 +20,16 @@ num spade( num apr, dec prd ) {
     anew char f ='h';
     anew num d = 5  ;
     
-    perhaps(a>=d) {
+    perhaps(a>=d || b < c) {
         anew num r = 5;
-    } however( 2 > 5 ){
-        anew num r2 = 5;
-        proclaim("Abc");
-    }
+    } 
     otherwise {
         anew num r3 = 5;
         proclaim("Abc");
     }
 
     
-    whilst( d < 5 ){
+    whilst( a>=d &&  d > 3){
         d = d + 5;
         proclaim("Abc");
     }
