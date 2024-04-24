@@ -5,20 +5,21 @@
     #include<ctype.h>
 	#include <stdbool.h>
     #include"lex.yy.c"
-    void yyerror(const char *s);
     int yylex();
     int yywrap();
+    int search(char *);
+	int check_types(char *, char *);
+    void yyerror(const char *s);
     void add(char);
     void insert_type();
-    int search(char *);
 	void insert_type();
 	void print_tree(struct node*);
 	void print_inorder(struct node *);
     void check_declaration(char *);
 	void check_return_type(char *);
-	int check_types(char *, char *);
-	char *get_type(char *);
 	void printBT(struct node*);
+	char *get_type(char *);
+	char *get_ftype(char *);
 	struct node* mknode(struct node *left, struct node *right, char *token);
 
     struct dataType {
@@ -46,6 +47,7 @@
     char icg[50][100];
 	int if_count = 0;
 	int is_mul = 0;
+	char currentFuncName[100];
 
 	struct node { 
 		struct node *left; 
@@ -71,21 +73,31 @@
 			char name[100];
 			struct node* nd;
 			char if_body[5];
-			char else_body[5];  
+			char else_body[5];
+			int parentCond;  
 		} nd_obj3;
 	} 
 %token VOID 
 %token <nd_obj> PRINT SCAN IF WHILE ELSE RETURN ELIF DECLARE ADD SUB MULT DIV LOG POW GE LE GT LT EQ NE TRUE FALSE AND OR INT FLOAT BOOL CHAR NUM FLOAT_NUM ID STR CHARACTER
 %type <nd_obj> program entry datatype body block else statement term factor base exponent mulops addops relop return and_or arithmetic
 %type <nd_obj2> init value expression 
-%type <nd_obj3> condition
+%type <nd_obj3> condition args typeArgs
 %define parse.error verbose 
 %%
 
-program: entry '(' ')' '{' body return '}' { struct node *main = mknode($5.nd, $6.nd, "Main"); $$.nd = mknode($1.nd, main, "Program"); head = $$.nd; } 
+program: entry '(' typeArgs ')' {
+	sprintf(icg[ic_idx++], "\nFunction: %s\n", $1.name);
+} '{' body return '}' program { 
+	struct node *main = mknode($7.nd, $8.nd, $1.name); 
+	struct node *args = mknode(NULL, $3.nd, "Func-Params"); 
+	struct node *wrapper = mknode(args, main, "Function");
+	$$.nd = mknode( $10.nd, wrapper, "Program"); 
+	head = $$.nd; 
+} 
+| { $$.nd = NULL; }
 ;
 
-entry: datatype ID { add('F'); }
+entry: datatype ID { add('F'); strcpy($$.name, $2.name); strcpy(currentFuncName, $2.name); }
 ;
 
 datatype: INT { insert_type(); }
@@ -110,15 +122,70 @@ body: IF { add('K'); is_for = 1; if_count++;}
 }
 | statement ';' { $$.nd = $1.nd; }
 | body body { $$.nd = mknode($1.nd, $2.nd, "statements"); }
-| PRINT { add('K'); } '(' value ')' ';' { $$.nd = mknode($4.nd, NULL, "printf");  }
+| PRINT { add('K'); } '(' value ')' ';' { $$.nd = mknode($4.nd, NULL, "printf"); sprintf(icg[ic_idx++], "\nPrint: %s\n", $4.name); }
 | WHILE { add('K'); is_for = 0;} '(' condition ')' '{' body '}' { 
-	struct node *temp = mknode($4.nd, NULL, "condition"); 
+	struct node *temp = mknode(NULL, $4.nd,  "condition"); 
 	$$.nd = mknode(temp, $7.nd, $1.name); 
 	sprintf(icg[ic_idx++], buff);
 	sprintf(icg[ic_idx++], "JUMP to %s\n", $4.if_body);
 	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
 }
+| ID '(' args ')' ';' {
+	printf("%s\n",get_ftype($1.name));
+	if(strcmp( get_ftype($1.name) ,"Function") != 0 ){
+		sprintf(errors[sem_errors], "Line %d: Unpermitted operation on not Function \"%s \"!\n", countn+1, $1.name);
+		sem_errors++;	
+	}
+	struct node *args = mknode(NULL, $3.nd, "Func-Params"); 
+	$$.nd = mknode($1.nd, args, "Func-Call");
+	sprintf(icg[ic_idx++], "Func-Call: %s\n", $1.name);
+}
 
+;
+
+typeArgs : datatype ID ',' typeArgs  { 
+	sprintf(icg[ic_idx++], "\nArg: %s:%s\n", $1.name,$2.name);
+	char temp[50]; 
+	sprintf(temp, "%s:%s", $1.name,$2.name);
+	struct node *tempNode = mknode(NULL,NULL,temp); 
+	$$.nd = mknode(tempNode, $4.nd, "args"); 
+}
+| datatype ID  { 
+	sprintf(icg[ic_idx++], "\nArg: %s:%s\n", $1.name,$2.name);
+	char temp[50]; 
+	sprintf(temp, "%s:%s", $1.name,$2.name);
+	$$.nd = mknode(NULL,NULL,temp); 
+}
+| { $$.nd = NULL; }
+;
+
+args : expression ',' args { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	$$.nd = mknode($1.nd, $3.nd, "args"); 
+}
+| value ',' args { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	$$.nd = mknode($1.nd, $3.nd, "args"); 
+}
+| ID ',' args { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	$$.nd = mknode($1.nd, $3.nd, "args"); 
+}
+| value { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	char temp[50]; sprintf(temp, "%s", $1.name);
+	$$.nd = mknode(NULL,NULL,temp); 
+}
+| expression { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	$$.nd = $1.nd; 
+} 
+| ID { 
+	sprintf(icg[ic_idx++], "Arg: %s\n", $1.name); 
+	char temp[50]; sprintf(temp, "%s", $1.name);
+	$$.nd = mknode(NULL,NULL,temp); 
+}
+| { $$.nd = NULL; }
 ;
 
 else: ELIF { add('K'); is_for = 1; } 
@@ -168,9 +235,9 @@ condition: condition AND condition {
 		sprintf(icg[ic_idx++], "\nif NOT (%s %s %s) GOTO L%d\n", $1.name, $2.name, $3.name, label);
 		sprintf($$.else_body, "L%d", label++);
 	} else {
-		sprintf(icg[ic_idx++], "\nif (%s %s %s) GOTO L%d else GOTO L%d\n", $1.name, $2.name, $3.name, label, label+1);
 		sprintf($$.if_body, "L%d", label++);
 		sprintf(icg[ic_idx++], "\nLABEL %s:\n", $$.if_body);
+		sprintf(icg[ic_idx++], "\nif (%s %s %s) GOTO L%d else GOTO L%d\n", $1.name, $2.name, $3.name, label-1, label);
 		sprintf($$.else_body, "L%d", label++);
 	}
 }
@@ -396,6 +463,7 @@ expression: expression arithmetic expression {
 	sprintf($$.name, "t%d", temp_var);
 	temp_var++;
 	sprintf(icg[ic_idx++], "%s = %s %s %s\n",  $$.name, $1.name, $2.name, $3.name);
+	$$.nd = mknode($1.nd, $3.nd, $2.name);
 }
 | value { strcpy($$.name, $1.name); sprintf($$.type, $1.type);  $$.nd = $1.nd; }
 ;
@@ -426,7 +494,7 @@ value: NUM { strcpy($$.name, $1.name); sprintf($$.type, "int"); add('C'); $$.nd 
 	}
 ;
 
-return: RETURN { add('K'); } value ';' { check_return_type($3.name); $1.nd = mknode(NULL, NULL, "return"); $$.nd = mknode($1.nd, $3.nd, "RETURN"); }
+return: RETURN { add('K'); } value ';' { check_return_type($3.name); $1.nd = mknode(NULL, NULL, "return"); $$.nd = mknode($1.nd, $3.nd, "RETURN"); sprintf(icg[ic_idx++], "\nReturn: %s\n", $3.name);}
 | { $$.nd = NULL; }
 ;
 
@@ -491,7 +559,7 @@ void check_declaration(char *c) {
 }
 
 void check_return_type(char *value) {
-	char *main_datatype = get_type("main");
+	char *main_datatype = get_type(currentFuncName);
 	char *return_datatype = get_type(value);
 	if((!strcmp(main_datatype, "int") && !strcmp(return_datatype, "CONST")) || !strcmp(main_datatype, return_datatype)){
 		return ;
@@ -535,6 +603,15 @@ char *get_type(char *var){
 		// Handle case of use before declaration
 		if(!strcmp(symbol_table[i].id_name, var)) {
 			return symbol_table[i].data_type;
+		}
+	}
+}
+
+char *get_ftype(char *var){
+	for(int i=0; i<count; i++) {
+		// Handle case of use before declaration
+		if(!strcmp(symbol_table[i].id_name, var)) {
+			return symbol_table[i].type;
 		}
 	}
 }
@@ -646,3 +723,4 @@ void printBT(struct node* ptr) {
 	printf("\n");
     printBTHelper("", ptr, 0);    
 }
+

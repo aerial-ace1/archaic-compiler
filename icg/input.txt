@@ -1,7 +1,12 @@
 # This is a comment
-num main() {
+str ace(){
+    anew str ap = "plz";
+    yield ap;
+}
+
+num spade( num apr, dec prd ) {
     anew num a = inquire( char ) ;    
-    anew str p = "abefj" + 3;
+    anew str p = "abefj" + 3 + 5;
     anew str b = "abefj" + 'c' + 6;
     anew str pl = "abefj"  + 89.6;
 
@@ -9,6 +14,7 @@ num main() {
     anew str l;
     l = "abc" + m;
 
+    ace( a + 5, b+6);
 
     anew bool c = indeed;
     anew char f ='h';
@@ -16,7 +22,7 @@ num main() {
     
     perhaps(a>=d) {
         anew num r = 5;
-    } however( nay ){
+    } however( 2 > 5 ){
         anew num r2 = 5;
         proclaim("Abc");
     }
