@@ -122,14 +122,6 @@ datatype: INT { insert_type(); }
 body: IF { add('K'); is_for = 1; if_count++;} 
 		'(' condition ')' 
 		{ 
-			printf("tlist is : \n");
-			for(int i=0;i<$4.tlistsize;i++){
-				printf("%d\n",$4.tlist[i]);
-			}
-			printf("flist is : \n");
-			for(int i=0;i<$4.flistsize;i++){
-				printf("%d\n",$4.flist[i]);
-			}
 			sprintf(icg[ic_idx++], "\nLABEL L%d:\n", label++); 
 			for(int i=0;i<$4.tlistsize;i++){
 				char temp[20];
@@ -155,12 +147,22 @@ else {
 | statement ';' { $$.nd = $1.nd; }
 | body body { $$.nd = mknode($1.nd, $2.nd, "statements"); }
 | PRINT { add('K'); } '(' value ')' ';' { $$.nd = mknode($4.nd, NULL, "printf"); sprintf(icg[ic_idx++], "\nPrint: %s\n", $4.name); }
-| WHILE { add('K'); is_for = 0;} '(' condition ')' '{' body '}' { 
-	struct node *temp = mknode(NULL, $4.nd,  "condition"); 
-	$$.nd = mknode(temp, $7.nd, $1.name); 
-	sprintf(icg[ic_idx++], buff);
-	sprintf(icg[ic_idx++], "JUMP to %s\n", $4.if_body);
-	sprintf(icg[ic_idx++], "\nLABEL %s:\n", $4.else_body);
+| WHILE {add('K'); is_for=0; } '(' condition ')' {
+    sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
+    for(int i=0;i<$4.tlistsize;i++){
+        char temp[20];
+        sprintf(temp, "GOTO L%d\n", label-1);
+        strcat(icg[$4.tlist[i]], temp);
+    }
+} '{' body '}' { 
+    $$.nd = mknode($4.nd, $8.nd, $1.name);
+    sprintf(icg[ic_idx++], "JUMP TO L%d\n", $4.label_for_while_start);
+    for(int i=0;i<$4.flistsize;i++){
+        char temp[20];
+        sprintf(temp, "GOTO L%d\n", label);
+        strcat(icg[$4.flist[i]], temp);
+    }
+	sprintf(icg[ic_idx++], "LABEL L%d:\n",label++);
 }
 | ID '(' args ')' ';' {
 	printf("%s\n",get_ftype($1.name));
@@ -266,6 +268,7 @@ condition: condition AND M condition {
     for(int i=0;i<$4.flistsize;i++){
         $$.flist[$$.flistsize++] = $4.flist[i];
     }
+	$$.label_for_while_start = $1.label_for_while_start;
 }
 | condition OR M condition { 
 	$$.nd = mknode($1.nd, $4.nd, "OR");
@@ -290,23 +293,23 @@ condition: condition AND M condition {
     for(int i=0;i<$4.flistsize;i++){
         $$.flist[$$.flistsize++] = $4.flist[i];
     }
+	$$.label_for_while_start = $1.label_for_while_start;
 }
 | value relop value { 
 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
-	if(!is_for) {
-		sprintf($$.if_body, "L%d", label++);
-		sprintf(icg[ic_idx++], "LABEL %s:\n", $$.if_body);
-		sprintf(icg[ic_idx++], "if NOT (%s %s %s) GOTO L%d\n", $1.name, $2.name, $3.name, label);
-		sprintf($$.else_body, "L%d", label++);
-	} else {
-		char ifstt[400];
-        sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
-		strcat(icg[ic_idx++], ifstt);
-        $$.tlistsize = 0;
-        $$.flistsize = 0;
-        $$.tlist[$$.tlistsize++] = ic_idx-1;
-        $$.flist[$$.flistsize++] = ic_idx++;
-	}
+	    char ifstt[400];
+    if(!is_for){
+        $$.label_for_while_start = label;
+        sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
+        is_for=1;
+    }
+    sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
+    strcat(icg[ic_idx++], ifstt);
+    $$.tlistsize = 0;
+    $$.flistsize = 0;
+    $$.tlist[$$.tlistsize++] = ic_idx-1;
+    $$.flist[$$.flistsize++] = ic_idx++;
+
 }
 | '(' condition ')' { 
     $$.nd = $2.nd; 
@@ -318,6 +321,7 @@ condition: condition AND M condition {
     for(int i=0;i<$2.flistsize;i++){
         $$.flist[i] = $2.flist[i];
     }
+	$$.label_for_while_start = $2.label_for_while_start;
 }
 | TRUE { 
 	add('K'); $$.nd = NULL; 
