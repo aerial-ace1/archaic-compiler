@@ -30,3 +30,11 @@ icg/lex.yy.c
 icg/y.tab.h
 icg/y.tab.c
 icg/y.output
+
+
+opt/a.out
+opt/lex.yy.c
+
+opt/y.tab.h
+opt/y.tab.c
+opt/y.output

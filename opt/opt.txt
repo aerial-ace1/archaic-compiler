@@ -1,0 +1,64 @@
+
+Arg: dec:prd
+
+Arg: num:apr
+
+Function: ace
+ap = "plz"
+
+Return: ap
+
+Function: spade
+a = inquire
+t0 = 3 + 5
+t1 = "abefj" + t0
+p = t1
+t2 = 'c' + 6
+t3 = "abefj" + t2
+b = t3
+t4 = "abefj" + 89.6
+pl = t4
+m = "rtes"
+l = NULL
+t5 = "abc" + m
+l = t5
+t6 = a + 5
+t7 = b + 6
+Arg: t7
+Arg: t6
+Func-Call: ace
+c = indeed
+f = 'h'
+t8 = 5 + 0
+d = t8
+if a >= d GOTO L0
+GOTO S30
+LABEL S30:
+if b < c GOTO L0
+GOTO L1
+
+LABEL L0:
+r = 5
+JUMP TO L2
+LABEL L1:
+r3 = 5
+
+Print: "Abc"
+LABEL L2:
+LABEL L3:
+if a >= d GOTO S42
+GOTO L5
+LABEL S42:
+if b < c GOTO L4
+GOTO L5
+LABEL L4:
+t9 = d + 5
+d = t9
+
+Print: "Abc"
+JUMP TO L3
+LABEL L5:
+t10 = d + 10
+d = t10
+
+Return: a
