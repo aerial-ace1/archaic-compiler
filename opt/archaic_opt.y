@@ -88,7 +88,7 @@
 		} nd_obj4;
 	} 
 %token VOID 
-%token <nd_obj> PRINT SCAN IF WHILE ELSE RETURN ELIF DECLARE ADD SUB MULT DIV LOG POW GE LE GT LT EQ NE TRUE FALSE AND OR INT FLOAT BOOL CHAR NUM FLOAT_NUM ID STR CHARACTER
+%token <nd_obj> PRINT SCAN IF WHILE ELSE RETURN ELIF DECLARE ADD SUB MULT DIV LOG POW GE LE GT LT EQ NE TRUE FALSE AND OR INT FLOAT BOOL CHAR NUM FLOAT_NUM ID STR CHARACTER ARRAY
 %type <nd_obj> program entry datatype body block else statement term factor base exponent mulops addops relop return and_or arithmetic
 %type <nd_obj2> init value expression 
 %type <nd_obj3> condition args typeArgs 
@@ -177,14 +177,26 @@ else {
 
 ;
 
-typeArgs : datatype ID ',' typeArgs  { 
+typeArgs : datatype ID { 
+	symbol_table[count].id_name=strdup($2.name);
+	symbol_table[count].data_type=strdup($1.name);
+	symbol_table[count].line_no=countn;
+	symbol_table[count].type=strdup("Variable");
+	count++;
+} ',' typeArgs  { 
 	sprintf(icg[ic_idx++], "\nArg: %s:%s\n", $1.name,$2.name);
 	char temp[50]; 
 	sprintf(temp, "%s:%s\n", $1.name,$2.name);
 	struct node *tempNode = mknode(NULL,NULL,temp); 
-	$$.nd = mknode(tempNode, $4.nd, "args"); 
+	$$.nd = mknode(tempNode, $5.nd, "args"); 
 }
-| datatype ID  { 
+| datatype ID  {
+	symbol_table[count].id_name=strdup($2.name);
+	symbol_table[count].data_type=strdup($1.name);
+	symbol_table[count].line_no=countn;
+	symbol_table[count].type=strdup("Variable");
+	count++;
+	add('V'); 
 	sprintf(icg[ic_idx++], "\nArg: %s:%s\n", $1.name,$2.name);
 	char temp[50]; 
 	sprintf(temp, "%s:%s\n", $1.name,$2.name);

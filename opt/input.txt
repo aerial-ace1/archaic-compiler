@@ -1,6 +1,7 @@
 # This is a comment
 str ace(num apr, dec prd){
     anew str ap = "plz";
+    apr = apr + 5;
     yield ap;
 }
 
