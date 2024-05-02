@@ -43,7 +43,6 @@ digit [0-9]
 "str"		      { strcpy(yylval.nd_obj.name,(yytext)); return STR; }
 "bool"		   { strcpy(yylval.nd_obj.name,(yytext)); return BOOL; }
 "char"         { strcpy(yylval.nd_obj.name,(yytext)); return CHAR; }
-"array"        { strcpy(yylval.nd_obj.name,(yytext)); return ARRAY; }
 
 \#.*			   { ; }
 [ \t]*			{ ; }

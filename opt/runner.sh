@@ -8,5 +8,5 @@ yacc -v -d archaic_opt.y --warning=none
 gcc y.tab.c --no-warnings
 
 
-./a.out<input.txt
+./a.out<quicksort.txt
 python3 opt.py

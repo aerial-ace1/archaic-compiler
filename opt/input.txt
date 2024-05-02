@@ -10,6 +10,9 @@ num spade( ) {
     anew str p = "abefj" + 3 + 5;
     anew str b = "abefj" + 'c' + 6;
     anew str pl = "abefj"  + 89.6;
+    anew num idk[10];
+
+    idk[6] = 5 + idk[4];
 
     anew str m = "rtes";
     anew str l;
@@ -36,4 +39,26 @@ num spade( ) {
     }
     d = d + 10;
     yield a;
+}
+
+
+bool quickSort(num arr, num low, num high){
+    perhaps(low < high){
+        anew num idx = partition(arr, low, high);
+        quickSort(arr,low,idx-1);
+        quickSort(arr,idx,high);
+    }
+}
+
+num main(){
+    anew num arr[10];
+    proclaim("Number of Elements of Array?");
+    anew num n = inquire("num");
+    anew num ct = 0;
+    whilst( ct < n ){
+        arr[ct] = inquire("num");
+        ct = ct + 1;
+    }
+    quickSort(arr,0,n-1);
+
 }

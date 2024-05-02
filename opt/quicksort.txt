@@ -1,0 +1,42 @@
+# This is QuickSort
+num partition(num splitarr, num low, num high){
+    anew num pivot = splitarr[high];
+    anew num i = high;
+    anew num k = high;
+    whilst(i > low){
+        perhaps(splitarr[i] > pivot){
+            anew num temp = 0;
+            temp = splitarr[i];
+            splitarr[i] = splitarr[k];
+            splitarr[k] = temp;
+            k = k - 1;
+        }
+        i = i - 1;
+    }
+    anew num replace = splitarr[low];
+    splitarr[low] = splitarr[high];
+    splitarr[high] = replace;
+    yield k;
+};
+
+bool quickSort(num arr, num low, num high){
+    perhaps(low < high){
+        anew num idx = partition(arr, low, high);
+        quickSort(arr,low,idx-1);
+        quickSort(arr,idx,high);
+    }
+}
+
+num main(){
+    anew num arr[10];
+    proclaim("Number of Elements of Array?");
+    anew num n = inquire("num");
+    anew num ct = 0;
+    whilst( ct < n ){
+        arr[ct] = inquire("num");
+        ct = ct + 1;
+    }
+    quickSort(arr,0,n-1);
+    yield 0;
+}
+

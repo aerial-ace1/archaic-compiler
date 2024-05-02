@@ -48,6 +48,8 @@
 	int if_count = 0;
 	int is_mul = 0;
 	char currentFuncName[100];
+	int is_array=0;
+    int temp_arr_var = 0;
 
 	struct node { 
 		struct node *left; 
@@ -66,13 +68,15 @@
 		struct var_name2 { 
 			char name[100]; 
 			struct node* nd;
-			char type[5];
+			int temp_arr_var;
+        	char type[10];
 		} nd_obj2; 
 
 		struct var_name3 {
 			char name[100]; 
 			struct node* nd;
 			char type[10];
+			int temp_arr_var;
 			char if_body[5];
 			char else_body[5];
 			char after_else_body[5];
@@ -90,7 +94,7 @@
 %token VOID 
 %token <nd_obj> PRINT SCAN IF WHILE ELSE RETURN ELIF DECLARE ADD SUB MULT DIV LOG POW GE LE GT LT EQ NE TRUE FALSE AND OR INT FLOAT BOOL CHAR NUM FLOAT_NUM ID STR CHARACTER ARRAY
 %type <nd_obj> program entry datatype body block else statement term factor base exponent mulops addops relop return and_or arithmetic
-%type <nd_obj2> init value expression 
+%type <nd_obj2> init value expression array assign
 %type <nd_obj3> condition args typeArgs 
 %type <nd_obj4> M
 %define parse.error verbose 
@@ -133,9 +137,9 @@ body: IF { add('K'); is_for = 1; if_count++;}
 		{   sprintf(icg[ic_idx++],"JUMP TO L%d\n", label+1);
     		sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
 			for(int i=0;i<$4.flistsize;i++){
-				char gotha[20];
-				sprintf(gotha, "GOTO L%d\n", label-1);
-				sprintf(icg[$4.flist[i]],gotha);
+				char temp[20];
+				sprintf(temp, "GOTO L%d\n", label-1);
+				sprintf(icg[$4.flist[i]],temp);
 			} 
     	}
 else { 
@@ -307,13 +311,31 @@ condition: condition AND M condition {
     }
 	$$.label_for_while_start = $1.label_for_while_start;
 }
-| value relop value { 
+| expression relop expression { 
 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
 	    char ifstt[400];
     if(!is_for){
         $$.label_for_while_start = label;
         sprintf(icg[ic_idx++], "LABEL L%d:\n", label++);
         is_for=1;
+    }
+	if (is_array == 0) {
+        if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if %s %s %s ", $1.name, "==", $3.name);
+        } else if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if %s %s %s ", $1.name, "!=", $3.name);
+        } else {
+            sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
+        }
+    } else {
+        if (strcmp($2.name, "==") == 0) {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr_var, "==", $3.temp_arr_var);
+        } else if (strcmp($2.name, "=!=") == 0) {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr_var, "!=", $3.temp_arr_var);
+        } else {
+            sprintf(ifstt, "if u%d %s u%d ", $1.temp_arr_var, $2.name, $3.temp_arr_var);
+        }
+        is_array = 0;
     }
     sprintf(ifstt, "if %s %s %s ", $1.name, $2.name, $3.name);
     strcat(icg[ic_idx++], ifstt);
@@ -397,47 +419,64 @@ statement: DECLARE datatype ID { add('V');} init {
 	} 
 	sprintf(icg[ic_idx++], "%s = %s\n", $3.name, $5.name);
 }
-| ID { check_declaration($1.name); } '=' expression {
+| ID { check_declaration($1.name); } '=' assign {
 	
 	if(undeclared){
 		undeclared = 0;
 		return;
 	}
-	$1.nd = mknode(NULL, NULL, $1.name); 
-	char *id_type = get_type($1.name); 
-	int t = check_types(id_type, $4.type); 
-	if(t>0) { 
-		if(t == 1) {
-			if(strcmp(id_type, "dec") != 0){
-				sprintf(errors[sem_errors], "Line %d: Cannot cast %s to dec\n", countn+1, id_type);
-				sem_errors++;
+	if(is_array == 0){
+		$1.nd = mknode(NULL, NULL, $1.name); 
+		char *id_type = get_type($1.name); 
+		int t = check_types(id_type, $4.type); 
+		if(t>0) { 
+			if(t == 1) {
+				if(strcmp(id_type, "dec") != 0){
+					sprintf(errors[sem_errors], "Line %d: Cannot cast %s to dec\n", countn+1, id_type);
+					sem_errors++;
+				}
+				struct node *temp = mknode(NULL, $4.nd, "toFloat");
+				$$.nd = mknode($1.nd, temp, "=");  
+			} 
+			else if(t == 2) { 
+				if(strcmp(id_type, "num") != 0){
+					sprintf(errors[sem_errors], "Line %d: Cannot cast %s to num\n", countn+1, id_type);
+					sem_errors++;
+				}
+				struct node *temp = mknode(NULL, $4.nd, "toInt");
+				$$.nd = mknode($1.nd, temp, "=");  
+			} 
+			else {
+				if(strcmp(id_type, "str") != 0){
+					sprintf(errors[sem_errors], "Line %d: Cannot cast %s to num\n", countn+1, id_type);
+					sem_errors++;
+				}
+				struct node *temp = mknode(NULL, $4.nd, "toString");
+				$$.nd = mknode($1.nd, temp, "=");  
 			}
-			struct node *temp = mknode(NULL, $4.nd, "toFloat");
-			$$.nd = mknode($1.nd, temp, "=");  
 		} 
-		else if(t == 2) { 
-			if(strcmp(id_type, "num") != 0){
-				sprintf(errors[sem_errors], "Line %d: Cannot cast %s to num\n", countn+1, id_type);
-				sem_errors++;
-			}
-			struct node *temp = mknode(NULL, $4.nd, "toInt");
-			$$.nd = mknode($1.nd, temp, "=");  
-		} 
-		else {
-			if(strcmp(id_type, "str") != 0){
-				sprintf(errors[sem_errors], "Line %d: Cannot cast %s to num\n", countn+1, id_type);
-				sem_errors++;
-			}
-			struct node *temp = mknode(NULL, $4.nd, "toString");
-			$$.nd = mknode($1.nd, temp, "=");  
+		else { 
+			$$.nd = mknode($1.nd, $4.nd, "="); 
 		}
-	} 
-	else { 
-		$$.nd = mknode($1.nd, $4.nd, "="); 
+		sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
+	}else{
+		is_array = 0;
+        $$.nd = mknode($1.nd,$4.nd,"=");
+        sprintf(icg[ic_idx++],"%s = u%d\n", $1.name,$4.temp_arr_var);
 	}
-	sprintf(icg[ic_idx++], "%s = %s\n", $1.name, $4.name);
 }
-| ID { check_declaration($1.name); } relop expression { 
+| array '=' expression {
+    is_array=0;
+    $$.nd = mknode($1.nd,$3.nd,"=");
+    sprintf(icg[ic_idx++],"u%d = %s\n", $1.temp_arr_var, $3.name);
+}
+| array '=' array {
+    is_array = 0;
+    $$.nd = mknode($1.nd,$3.nd,"=");
+    sprintf(icg[ic_idx++],"u%d = u%d\n", $1.temp_arr_var,$3.temp_arr_var);
+}
+
+|ID { check_declaration($1.name); } relop expression { 
 	if(undeclared){
 		undeclared = 0;
 		return;
@@ -445,7 +484,34 @@ statement: DECLARE datatype ID { add('V');} init {
 	$1.nd = mknode(NULL, NULL, $1.name); $$.nd = mknode($1.nd, $4.nd, $3.name); }
 ;
 
+assign: expression {
+    strcpy($$.type,$1.type);
+    $$.nd = $1.nd;
+}
+| array {
+    $$.nd = $1.nd;
+    $$.temp_arr_var = $1.temp_arr_var;
+}
+| ID '(' args ')' {
+    strcpy($$.type,"number");
+    $$.nd = mknode($1.nd,$3.nd,"Func-Call");
+}
+
 init: '=' expression { $$.nd = $2.nd; sprintf($$.type, $2.type); strcpy($$.name, $2.name); }
+| '[' NUM ']' {
+    char temp[100] = "";
+    char temp2[2];
+    char temp3[2];
+    sprintf(temp2, "[");
+    sprintf(temp3, "]");
+    strcat(temp, temp2);
+    strcat(temp, $2.name);
+    strcat(temp, temp3);
+    strcpy($$.name, temp);
+    $$.nd = mknode(NULL, NULL, $$.name );
+    sprintf($$.type, "num");
+    is_array=1;
+}
 | { sprintf($$.type, "null"); $$.nd = mknode(NULL, NULL, "NULL"); strcpy($$.name, "NULL"); }
 ;
 
@@ -586,7 +652,25 @@ value: NUM { strcpy($$.name, $1.name); sprintf($$.type, "int"); add('C'); $$.nd 
 | SCAN { add('K'); } '(' datatype ')' { 
 	strcpy($$.name, $1.name); add('C'); sprintf($$.type, $4.name); $$.nd = mknode(NULL, NULL, "scanf");  
 	}
+| array { $$.nd = $1.nd; strcpy($$.type,$1.type); strcpy($$.name,$1.name); $$.temp_arr_var = $1.temp_arr_var;}
 ;
+
+array: ID '[' expression ']' { 
+    check_declaration($1.name);
+    char *id_type = get_type($1.name);
+    if(id_type!=NULL) strcpy($$.type,id_type); 
+    char temp[100] = "";
+    strcat(temp, $1.name);
+    strcat(temp, "[");
+    strcat(temp, $3.name);
+    strcat(temp, "]");
+    strcpy($$.name, temp);
+    $$.nd = mknode(NULL, NULL, $$.name); 
+    is_array = 1;
+    $$.temp_arr_var = temp_arr_var++;
+    sprintf(icg[ic_idx++],"t%d = 4 * %s\n",temp_var++,$3.name);
+    sprintf(icg[ic_idx++],"u%d = %s[t%d]\n",$$.temp_arr_var,$1.name,temp_var-1);
+}
 
 return: RETURN { add('K'); } value ';' { check_return_type($3.name); $1.nd = mknode(NULL, NULL, "return"); $$.nd = mknode($1.nd, $3.nd, "RETURN"); sprintf(icg[ic_idx++], "\nReturn: %s\n", $3.name);}
 | { $$.nd = NULL; }

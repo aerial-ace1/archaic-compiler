@@ -1,66 +1,57 @@
 
-Arg: dec:prd
+Arg: num:high
 
-Arg: num:apr
+Arg: num:low
 
-Function: ace
-ap = plz
-t0 = apr + 5
-apr = t0
+Arg: num:splitarr
 
-Return: ap
-
-Function: spade
-a = inquire
-
-t2 = "abefj" + 8
-p = t2
-t3 = 'c' + 6
-t4 = "abefj" + t3
-b = t4
-t5 = "abefj" + 89.6
-pl = t5
-m = rtes
-l = NULL
-t6 = "abc" + m
-l = t6
-t7 = a + 5
-t8 = b + 6
-Arg: t8
-Arg: t7
-Func-Call: ace
-c = indeed
-f = h
-
-d = 5
-if a >= d GOTO L0
-GOTO S32
-LABEL S32:
-if b < c GOTO L0
-GOTO L1
-
+Function: partition
+t0 = 4 * high
+u0 = splitarr[t0]
+pivot = splitarr[high]
+i = high
+k = high
 LABEL L0:
-r = 5
-JUMP TO L2
+if i > low GOTO L1
+GOTO L5
 LABEL L1:
-r3 = 5
 
-Print: "Abc"
+u1 = splitarr[t1]
+if splitarr[i] > pivot GOTO L2
+GOTO L3
+
 LABEL L2:
+
+
+u2 = splitarr[t2]
+temp = u2
+
+u3 = splitarr[t3]
+t4 = 4 * k
+u4 = splitarr[t4]
+u3 = u4
+t5 = 4 * k
+u5 = splitarr[t5]
+u5 = 0
+t6 = k - 1
+k = t6
+JUMP TO L4
 LABEL L3:
-if a >= d GOTO S44
-GOTO L5
-LABEL S44:
-if b < c GOTO L4
-GOTO L5
 LABEL L4:
-t10 = d + 5
-d = t10
 
-Print: "Abc"
-JUMP TO L3
+i = 39
+JUMP TO L0
 LABEL L5:
-t11 = d + 10
-d = t11
+t8 = 4 * low
+u6 = splitarr[t8]
+replace = splitarr[low]
+t9 = 4 * low
+u7 = splitarr[t9]
+t10 = 4 * high
+u8 = splitarr[t10]
+u7 = u8
+t11 = 4 * high
+u9 = splitarr[t11]
+u9 = replace
 
-Return: a
+Return: k
